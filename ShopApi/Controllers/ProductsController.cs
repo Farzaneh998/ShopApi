@@ -8,9 +8,15 @@ namespace ShopApi.Controllers
 
     public class ProductsController : ControllerBase
     {
+        private readonly ILogger _logger;
+        public ProductsController (ILogger<ProductsController> logger)
+        {
+            _logger = logger;
+        }
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            _logger.LogInformation("Controller executed");
             if (id == 0)
                 throw new NotFoundException("Product not found");
 

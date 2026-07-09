@@ -1,6 +1,17 @@
 using ShopApi.Middlewares;
+using Serilog;
+
+//serilog config
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Seq("http://localhost:5341")
+    .CreateLogger();
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();//useserilog insted  asp Ilogger
+
 
 // Add services to the container.
 
@@ -19,6 +30,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //middele ware
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthorization();
 
