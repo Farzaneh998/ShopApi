@@ -1,5 +1,7 @@
-using ShopApi.Middlewares;
+
 using Serilog;
+using ShopApi.Middlewares;
+
 
 //serilog config
 Log.Logger = new LoggerConfiguration()
@@ -16,10 +18,21 @@ builder.Host.UseSerilog();//useserilog insted  asp Ilogger
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+
+//validator
+
+
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

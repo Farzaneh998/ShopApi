@@ -25,10 +25,8 @@ public class RequestLoggingMiddleware
         var stopwatch = Stopwatch.StartNew();// rate req
 
 
-
-
-      //  context.Response.Headers.Add("X-Correlation-Id", correlationId);
-
+     
+        context.Response.Headers["X-Correlation-Id"] = correlationId;
         using (LogContext.PushProperty(
             "CorrelationId",
             correlationId))
