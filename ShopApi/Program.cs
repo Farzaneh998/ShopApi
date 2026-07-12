@@ -1,5 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
 using Serilog;
+using ShopApi.Application.Services;
+using ShopApi.Infrastructure.Data;
 using ShopApi.Middlewares;
 
 
@@ -15,16 +18,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();//useserilog insted  asp Ilogger
 
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+builder.Services.AddDbContext<ShopDbContext>(options =>
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 
-//validator
+builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ProductService>();
 
-
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -35,10 +42,10 @@ if (app.Environment.IsDevelopment())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.MapOpenApi();
+//}
 
 app.UseHttpsRedirection();
 
