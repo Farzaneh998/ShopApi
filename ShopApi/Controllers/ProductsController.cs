@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using ShopApi.Application.DTOs;
+using ShopApi.Application.Features.Products.Commands.CreateProduct;
+using ShopApi.Application.Features.Products.Queries.GetProductById;
 using ShopApi.Application.Services;
 using ShopApi.Domain.Entities;
 using ShopApi.Exceptions;
@@ -15,69 +18,84 @@ namespace ShopApi.Controllers
         private readonly ILogger _logger;
         private readonly ProductService _productService;
 
-        public ProductsController(ILogger<ProductsController> logger, ProductService productService)
+        private readonly IMediator _mediator;
+
+        public ProductsController(ILogger<ProductsController> logger, ProductService productService, IMediator mediator)
         {
             _logger = logger;
             _productService = productService;
-
+            _mediator = mediator;
 
         }
-        //[HttpGet("{id}")]
-        //public IActionResult Get(int id)
-        //{
-        //    _logger.LogInformation("Controller executed");
-        //    if (id == 0)
-        //        throw new NotFoundException("Product not found");
 
-        //    return Ok(new { Id = id, Name = "Laptop" });
-        //}
 
+        //    #region(callservice)
+        //    [HttpPost]
+        //    public async Task<IActionResult> Create(CreateProductDto product, CancellationToken cancellationToken)
+        //    {
+        //        var result =
+        //            await _productService.CreateAsync(product, cancellationToken);
+        //        return Ok(result);
+        //    }
+
+
+        //    [HttpGet("{id}")]
+        //    public async Task<IActionResult> Get(
+        //int id,
+        //CancellationToken cancellationToken)
+        //    {
+        //        var product =
+        //            await _productService.GetByIdAsync(
+        //                id,
+        //                cancellationToken);
+
+        //        if (product is null)
+        //            return NotFound();
+
+        //        return Ok(product);
+        //    }
+
+
+        //    [HttpGet]
+        //    public async Task<IActionResult> GetAll(
+        //[FromQuery] ProductQueryDto query,
+        //CancellationToken cancellationToken)
+        //    {
+        //        var result =
+        //            await _productService.GetAllAsync(query, cancellationToken);
+
+        //        return Ok(result);
+        //    }
+
+        //    #endregion
+
+
+        #region(cqrs)
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductDto product, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(
+    CreateProductCommand command)
         {
-            var result =
-                await _productService.CreateAsync(product, cancellationToken);
-            return Ok(result);
+            var id = await _mediator.Send(command);
+            return Ok(id);
         }
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(
-    int id,
-    CancellationToken cancellationToken)
-        {
-            var product =
-                await _productService.GetByIdAsync(
-                    id,
-                    cancellationToken);
-
-            if (product is null)
-                return NotFound();
-
-            return Ok(product);
-        }
-
-
-//        [HttpGet]
-//        public async Task<IActionResult> GetAll(
-//CancellationToken cancellationToken)
-//        {
-//            var result =
-//               await _productService.GetAllAsync(cancellationToken);
-
-//            return Ok(result);
-//        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll(
-    [FromQuery] ProductQueryDto query,
-    CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(int id,
+           CancellationToken cancellationToken)
         {
             var result =
-                await _productService.GetAllAsync(query, cancellationToken);
+                await _mediator.Send(
+                    new GetProductByIdQuery(id),
+                    cancellationToken);
+
+            if (result is null)
+                return NotFound();
 
             return Ok(result);
         }
+
+        #endregion
     }
 }

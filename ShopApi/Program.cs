@@ -28,8 +28,15 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();//swagger
+
+//services
 builder.Services.AddScoped<ProductService>();
+
+//mediatr
+builder.Services.AddMediatR(
+    cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly)
+);
 
 //builder.Services.AddOpenApi();
 
