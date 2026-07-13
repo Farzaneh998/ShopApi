@@ -1,6 +1,9 @@
 
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using ShopApi.Application.Behaviors;
 using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Middlewares;
@@ -27,18 +30,24 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
-
+//builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();//swagger
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();//fluentvalidator
 
 //services
 builder.Services.AddScoped<ProductService>();
+
+
 
 //mediatr
 builder.Services.AddMediatR(
     cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly)
 );
 
-//builder.Services.AddOpenApi();
+//piplineBehavior
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
+
+
 
 var app = builder.Build();
 
@@ -61,6 +70,8 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthorization();
 
-app.MapControllers();
 
+
+
+app.MapControllers();
 app.Run();
