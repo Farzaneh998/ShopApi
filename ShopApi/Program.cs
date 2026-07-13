@@ -46,7 +46,8 @@ builder.Services.AddMediatR(
 
 //piplineBehavior
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
-
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(LoggingBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(PerformanceBehavior<,>));
 
 
 var app = builder.Build();
