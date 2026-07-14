@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ShopApi.Application.Features.Products.Events;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Data;
 
@@ -7,11 +8,13 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
     public class CreateProductHandler : IRequestHandler<CreateProductCommand, int>
     {
         private readonly ShopDbContext _context;
+        private readonly IMediator _mediator;
 
         public CreateProductHandler(
-            ShopDbContext context)
+            ShopDbContext context, IMediator mediator)
         {
             _context = context;
+            _mediator = mediator;
         }
 
 
@@ -33,6 +36,14 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
 
             await _context.SaveChangesAsync(
                 cancellationToken);
+
+            //publish event
+            await _mediator.Publish(
+    new ProductCreatedEvent(
+        product.Id,
+        product.Name),
+    cancellationToken);
+
 
             return product.Id;
         }
