@@ -4,8 +4,10 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ShopApi.Application.Behaviors;
+using ShopApi.Application.Common.Interfaces;
 using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Data;
+using ShopApi.Infrastructure.Services;
 using ShopApi.Middlewares;
 
 
@@ -36,8 +38,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();//fluentvalidato
 
 //services
 builder.Services.AddScoped<ProductService>();
-
-
+builder.Services.AddScoped<ITokenService,TokenService>();
 
 //mediatr
 builder.Services.AddMediatR(
