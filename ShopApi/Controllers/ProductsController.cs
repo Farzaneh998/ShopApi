@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Application.DTOs;
 using ShopApi.Application.Features.Products.Commands.CreateProduct;
@@ -12,7 +13,7 @@ namespace ShopApi.Controllers
 {
     [ApiController]
     [Route("api/products")]
-
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly ILogger _logger;

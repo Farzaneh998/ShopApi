@@ -9,7 +9,9 @@ using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Infrastructure.Services;
 using ShopApi.Middlewares;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 //serilog config
 Log.Logger = new LoggerConfiguration()
@@ -22,6 +24,41 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();//useserilog insted  asp Ilogger
 
+#region(jwt Authentication)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+
+    options.DefaultChallengeScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters =
+        new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+
+            ValidateAudience = true,
+
+            ValidateLifetime = true,
+
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer =
+                builder.Configuration["Jwt:Issuer"],
+
+            ValidAudience =
+                builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                        builder.Configuration["Jwt:Key"]!))
+        };
+});
+#endregion
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ShopDbContext>(options =>
@@ -33,8 +70,9 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();//swagger
+//builder.Services.AddSwaggerGen();//swagger
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();//fluentvalidator
+
 
 //services
 builder.Services.AddScoped<ProductService>();
@@ -70,6 +108,8 @@ app.UseHttpsRedirection();
 //middele ware
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 
