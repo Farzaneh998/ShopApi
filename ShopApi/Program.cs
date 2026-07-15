@@ -1,7 +1,10 @@
 
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Common.Interfaces;
@@ -9,9 +12,10 @@ using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Infrastructure.Services;
 using ShopApi.Middlewares;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
+
+
 
 //serilog config
 Log.Logger = new LoggerConfiguration()
@@ -69,10 +73,45 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddOpenApi();
-//builder.Services.AddSwaggerGen();//swagger
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();//fluentvalidator
 
+//builder.Services.AddOpenApi();
+//builder.Services.AddSwaggerGen();//swagger
+#region(swagger)
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ShopApi",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT Token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference=new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+#endregion
 
 //services
 builder.Services.AddScoped<ProductService>();
