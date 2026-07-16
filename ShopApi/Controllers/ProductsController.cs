@@ -13,7 +13,7 @@ namespace ShopApi.Controllers
 {
     [ApiController]
     [Route("api/products")]
-    [Authorize]
+   // [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -72,7 +72,7 @@ namespace ShopApi.Controllers
 
 
         #region(cqrs)
-
+        [Authorize(Policy = "Product.Create")]
         [HttpPost]
         public async Task<IActionResult> Create(
     CreateProductCommand command)
@@ -81,7 +81,7 @@ namespace ShopApi.Controllers
             return Ok(id);
         }
 
-
+        [Authorize(Policy = "Product.Read")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id,
            CancellationToken cancellationToken)

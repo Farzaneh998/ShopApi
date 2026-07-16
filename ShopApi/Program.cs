@@ -126,7 +126,20 @@ builder.Services.AddMediatR(
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(PerformanceBehavior<,>));
+#region(authize policy ??????)
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Product.Read", policy =>
+    {
+        policy.RequireRole("Admin", "Manager");
+    });
 
+    options.AddPolicy("Product.Create", policy =>
+    {
+        policy.RequireRole("Admin");
+    });
+});
+#endregion
 
 var app = builder.Build();
 
