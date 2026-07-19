@@ -1,8 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using ShopApi.Application.Common.Interfaces;
+using ShopApi.Application.Features.Auth.Commands.Login;
 using ShopApi.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ShopApi.Infrastructure.Services
@@ -16,6 +18,7 @@ namespace ShopApi.Infrastructure.Services
             _configuration = configuration;
         }
 
+        //AccsessToken(jwt)
         public string GenerateToken(User user)
         {
             // Claims
@@ -53,5 +56,28 @@ namespace ShopApi.Infrastructure.Services
             return new JwtSecurityTokenHandler()
                 .WriteToken(token);
         }
+
+        //داخلی
+        private string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+
+            using var rng = RandomNumberGenerator.Create();
+
+            rng.GetBytes(randomBytes);
+
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public TokenResult GenerateTokens(User user)
+        {
+            return new TokenResult
+            {
+                AccessToken = GenerateToken(user),
+
+                RefreshToken = GenerateRefreshToken()
+            };
+        }
+
     }
 }
