@@ -2,6 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -11,6 +12,7 @@ using ShopApi.Application.Common.Interfaces;
 using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Infrastructure.Services;
+using ShopApi.Infrastructure.Services.Security;
 using ShopApi.Middlewares;
 using System.Text;
 
@@ -116,6 +118,7 @@ builder.Services.AddSwaggerGen(options =>
 //services
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 //mediatr
 builder.Services.AddMediatR(
