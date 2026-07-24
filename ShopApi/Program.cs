@@ -12,6 +12,7 @@ using ShopApi.Application.Common.Interfaces;
 using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Infrastructure.Services;
+using ShopApi.Infrastructure.Services.Caching;
 using ShopApi.Infrastructure.Services.Security;
 using ShopApi.Middlewares;
 using System.Text;
@@ -124,6 +125,17 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddMediatR(
     cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly)
 );
+
+//Redis
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+    options.InstanceName = "ShopApi:";
+});
+builder.Services.AddScoped<ICacheService,RedisCacheService>();
+
+
+
 
 //piplineBehavior
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));

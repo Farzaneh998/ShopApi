@@ -2,6 +2,7 @@
 using ShopApi.Application.Features.Products.Events;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Data;
+using ShopApi.Infrastructure.Services.Caching;
 
 namespace ShopApi.Application.Features.Products.Commands.CreateProduct
 {
@@ -9,12 +10,14 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
     {
         private readonly ShopDbContext _context;
         private readonly IMediator _mediator;
+        private readonly ICacheService _cacheService;
 
         public CreateProductHandler(
-            ShopDbContext context, IMediator mediator)
+            ShopDbContext context, IMediator mediator, ICacheService cacheService)
         {
             _context = context;
             _mediator = mediator;
+            _cacheService = cacheService;
         }
 
 
@@ -43,6 +46,9 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
         product.Id,
         product.Name),
     cancellationToken);
+
+            //remove cache
+            await _cacheService.RemoveAsync("products");
 
 
             return product.Id;

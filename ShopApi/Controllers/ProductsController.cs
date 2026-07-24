@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Application.DTOs;
 using ShopApi.Application.Features.Products.Commands.CreateProduct;
+using ShopApi.Application.Features.Products.Queries.GetAllProducts;
 using ShopApi.Application.Features.Products.Queries.GetProductById;
 using ShopApi.Application.Services;
 using ShopApi.Domain.Entities;
@@ -81,6 +82,7 @@ namespace ShopApi.Controllers
             return Ok(id);
         }
 
+
         [Authorize(Policy = "Product.Read")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id,
@@ -97,6 +99,17 @@ namespace ShopApi.Controllers
             return Ok(result);
         }
 
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result =await _mediator.Send(
+                    new GetAllProductQuery());
+
+            return Ok(result);
+        }
         #endregion
     }
 }
