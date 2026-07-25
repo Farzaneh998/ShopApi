@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Application.Features.Auth.Commands.Login;
 using ShopApi.Application.Features.Auth.Commands.RefreshToken;
+using ShopApi.Application.Features.Register;
 
 namespace ShopApi.Controllers
 {
@@ -34,6 +35,11 @@ namespace ShopApi.Controllers
         }
 
 
-
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterCommand command)
+        {
+             await _mediator.Send(command);
+            return Ok();
+        }
     }
 }

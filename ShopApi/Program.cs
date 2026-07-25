@@ -1,5 +1,6 @@
 
 using FluentValidation;
+using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,9 @@ using Serilog;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Common.Interfaces;
 using ShopApi.Application.Services;
+using ShopApi.Infrastructure.Configurations;
 using ShopApi.Infrastructure.Data;
+using ShopApi.Infrastructure.Jobs;
 using ShopApi.Infrastructure.Services;
 using ShopApi.Infrastructure.Services.Caching;
 using ShopApi.Infrastructure.Services.Security;
@@ -121,6 +124,10 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
+//background job 
+builder.Services.AddScoped<WelcomeEmailJob>();
+builder.Services.AddScoped<RefreshTokenCleanupJob>();
+
 //mediatr
 builder.Services.AddMediatR(
     cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly)
@@ -134,14 +141,23 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddScoped<ICacheService,RedisCacheService>();
 
-
+//Hangifire
+//builder.Services.AddHangfire(config =>
+//{
+//    config.UseSqlServerStorage(
+//        builder.Configuration.GetConnectionString("DefaultConnection"));
+//});
+//builder.Services.AddHangfireServer();
+builder.Services.AddHangfireConfiguration(builder.Configuration);
 
 
 //piplineBehavior
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(PerformanceBehavior<,>));
-#region(authize policy ??????)
+
+
+#region(authize policy )
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Product.Read", policy =>
@@ -156,6 +172,10 @@ builder.Services.AddAuthorization(options =>
 });
 #endregion
 
+
+
+
+#region(pipline)
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -170,17 +190,19 @@ if (app.Environment.IsDevelopment())
 //    app.MapOpenApi();
 //}
 
+
 app.UseHttpsRedirection();
+//app.UseHangfireDashboard();
+app.UseHangfireConfiguration();
+
 
 //middele ware
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 
-
-
 app.MapControllers();
 app.Run();
+#endregion

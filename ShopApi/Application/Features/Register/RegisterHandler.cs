@@ -1,8 +1,10 @@
-﻿using MediatR;
+﻿using Hangfire;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Data;
+using ShopApi.Infrastructure.Jobs;
 using ShopApi.Infrastructure.Services.Security;
 
 namespace ShopApi.Application.Features.Register
@@ -35,6 +37,8 @@ namespace ShopApi.Application.Features.Register
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            BackgroundJob.Enqueue<WelcomeEmailJob>( x => x.SendWelcomeEmail(request.UserName));//hangifire(fire & firget job)
         }
     }
 }
