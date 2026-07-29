@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using ShopApi.Application.Events;
 using ShopApi.Application.Features.Products.Events;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Data;
+using ShopApi.Infrastructure.Messaging;
 using ShopApi.Infrastructure.Services.Caching;
 
 namespace ShopApi.Application.Features.Products.Commands.CreateProduct
@@ -11,13 +13,14 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
         private readonly ShopDbContext _context;
         private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
-
+        private readonly IRabbitMQPublisher _publisher;
         public CreateProductHandler(
-            ShopDbContext context, IMediator mediator, ICacheService cacheService)
+            ShopDbContext context, IMediator mediator, ICacheService cacheService, IRabbitMQPublisher rabbitMQPublisher)
         {
             _context = context;
             _mediator = mediator;
             _cacheService = cacheService;
+            _publisher = rabbitMQPublisher;
         }
 
 
@@ -40,15 +43,28 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
             await _context.SaveChangesAsync(
                 cancellationToken);
 
-            //publish event
+            #region(publish event RabitMQ)
+
+            await _publisher.Publish(
+    new ProductCreatedEventMassage
+    {
+        ProductId = product.Id,
+        Name = product.Name,
+        CreatedAt = DateTime.UtcNow
+    });
+
+            #endregion
+
+            #region(publish event : DOMAIN Driven event)
             await _mediator.Publish(
     new ProductCreatedEvent(
         product.Id,
         product.Name),
     cancellationToken);
 
+            #endregion
             //remove cache
-            await _cacheService.RemoveAsync("products");
+          //  await _cacheService.RemoveAsync("products");
 
 
             return product.Id;

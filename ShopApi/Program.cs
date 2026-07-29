@@ -14,6 +14,7 @@ using ShopApi.Application.Services;
 using ShopApi.Infrastructure.Configurations;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Infrastructure.Jobs;
+using ShopApi.Infrastructure.Messaging;
 using ShopApi.Infrastructure.Services;
 using ShopApi.Infrastructure.Services.Caching;
 using ShopApi.Infrastructure.Services.Security;
@@ -124,6 +125,11 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
+//rabbit
+builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
+builder.Services.AddHostedService<RabbitMQConsumer>();
+
+
 //background job 
 builder.Services.AddScoped<WelcomeEmailJob>();
 builder.Services.AddScoped<RefreshTokenCleanupJob>();
@@ -162,12 +168,12 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Product.Read", policy =>
     {
-        policy.RequireRole("Admin", "Manager");
+        policy.RequireRole("User", "Manager");
     });
 
     options.AddPolicy("Product.Create", policy =>
     {
-        policy.RequireRole("Admin");
+        policy.RequireRole("User");
     });
 });
 #endregion
