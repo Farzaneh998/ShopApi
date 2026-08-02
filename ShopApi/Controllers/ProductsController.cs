@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Application.DTOs;
@@ -6,6 +7,8 @@ using ShopApi.Application.Features.Products.Commands.CreateProduct;
 using ShopApi.Application.Features.Products.Queries.GetAllProducts;
 using ShopApi.Application.Features.Products.Queries.GetProductById;
 using ShopApi.Application.Services;
+using ShopApi.Contracts.Requests;
+using ShopApi.Contracts.Responses;
 using ShopApi.Domain.Entities;
 using ShopApi.Exceptions;
 
@@ -21,12 +24,13 @@ namespace ShopApi.Controllers
         private readonly ProductService _productService;
 
         private readonly IMediator _mediator;
-
-        public ProductsController(ILogger<ProductsController> logger, ProductService productService, IMediator mediator)
+        private readonly IRequestClient<CheckInventoryRequest> _client;//request rabbitMQ
+        public ProductsController(ILogger<ProductsController> logger, ProductService productService, IMediator mediator, IRequestClient<CheckInventoryRequest> client)
         {
             _logger = logger;
             _productService = productService;
             _mediator = mediator;
+            _client = client;
 
         }
 
@@ -110,6 +114,20 @@ namespace ShopApi.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet("inventory")]
+        public async Task<IActionResult> Inventory()
+        {
+            var response =
+                await _client.GetResponse<
+                    CheckInventoryResponse>(
+
+                    new CheckInventoryRequest(5));
+
+            return Ok(response.Message);
+        }
+
         #endregion
     }
 }

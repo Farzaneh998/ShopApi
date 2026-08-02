@@ -14,6 +14,7 @@ namespace ShopApi.Infrastructure.Messaging
                 x.AddConsumer<ProductCreatedConsumer>();
                 x.AddConsumer<EmailConsumer>();
                 x.AddConsumer<AuditConsumer>();
+                x.AddConsumer<InventoryConsumer>();
 
 
 
