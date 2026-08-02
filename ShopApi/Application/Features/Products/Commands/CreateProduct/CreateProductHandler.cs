@@ -1,9 +1,9 @@
-﻿using MediatR;
-using ShopApi.Application.Events;
+﻿using MassTransit;
+using MediatR;
 using ShopApi.Application.Features.Products.Events;
+using ShopApi.Contracts.Events;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Data;
-using ShopApi.Infrastructure.Messaging;
 using ShopApi.Infrastructure.Services.Caching;
 
 namespace ShopApi.Application.Features.Products.Commands.CreateProduct
@@ -13,14 +13,16 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
         private readonly ShopDbContext _context;
         private readonly IMediator _mediator;
         private readonly ICacheService _cacheService;
-        private readonly IRabbitMQPublisher _publisher;
+        private readonly IPublishEndpoint _publishEndpoint;
+
         public CreateProductHandler(
-            ShopDbContext context, IMediator mediator, ICacheService cacheService, IRabbitMQPublisher rabbitMQPublisher)
+            ShopDbContext context, IMediator mediator, ICacheService cacheService, IPublishEndpoint publishEndpoint)
         {
             _context = context;
             _mediator = mediator;
             _cacheService = cacheService;
-            _publisher = rabbitMQPublisher;
+            _publishEndpoint = publishEndpoint;
+
         }
 
 
@@ -43,17 +45,14 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
             await _context.SaveChangesAsync(
                 cancellationToken);
 
-            #region(publish event RabitMQ)
+            //Masstransit pub
+            await _publishEndpoint.Publish(
+                new ProductCreated(
+                    product.Id,
+                    product.Name,
+                    product.Price));
 
-            await _publisher.Publish(
-    new ProductCreatedEventMassage
-    {
-        ProductId = product.Id,
-        Name = product.Name,
-        CreatedAt = DateTime.UtcNow
-    });
 
-            #endregion
 
             #region(publish event : DOMAIN Driven event)
             await _mediator.Publish(
@@ -64,7 +63,7 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
 
             #endregion
             //remove cache
-          //  await _cacheService.RemoveAsync("products");
+            //  await _cacheService.RemoveAsync("products");
 
 
             return product.Id;

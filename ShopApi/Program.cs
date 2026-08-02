@@ -125,10 +125,6 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-//rabbit
-builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
-builder.Services.AddHostedService<RabbitMQConsumer>();
-
 
 //background job 
 builder.Services.AddScoped<WelcomeEmailJob>();
@@ -155,7 +151,7 @@ builder.Services.AddScoped<ICacheService,RedisCacheService>();
 //});
 //builder.Services.AddHangfireServer();
 builder.Services.AddHangfireConfiguration(builder.Configuration);
-
+builder.Services.AddMassTransitConfiguration();
 
 //piplineBehavior
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationBehavior<,>));
@@ -200,6 +196,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 //app.UseHangfireDashboard();
 app.UseHangfireConfiguration();
+
 
 
 //middele ware
