@@ -7,6 +7,7 @@ using ShopApi.Application.Features.Products.Commands.CreateProduct;
 using ShopApi.Application.Features.Products.Queries.GetAllProducts;
 using ShopApi.Application.Features.Products.Queries.GetProductById;
 using ShopApi.Application.Services;
+using ShopApi.Contracts.Commands;
 using ShopApi.Contracts.Requests;
 using ShopApi.Contracts.Responses;
 using ShopApi.Domain.Entities;
@@ -17,7 +18,7 @@ namespace ShopApi.Controllers
 {
     [ApiController]
     [Route("api/products")]
-   // [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -25,12 +26,15 @@ namespace ShopApi.Controllers
 
         private readonly IMediator _mediator;
         private readonly IRequestClient<CheckInventoryRequest> _client;//request rabbitMQ
-        public ProductsController(ILogger<ProductsController> logger, ProductService productService, IMediator mediator, IRequestClient<CheckInventoryRequest> client)
+        private readonly ISendEndpointProvider _send;//send rabbit
+        public ProductsController(ILogger<ProductsController> logger, ProductService productService, IMediator mediator,
+            IRequestClient<CheckInventoryRequest> client, ISendEndpointProvider sendEndpointProvider)
         {
             _logger = logger;
             _productService = productService;
             _mediator = mediator;
             _client = client;
+            _send = sendEndpointProvider;
 
         }
 
@@ -109,13 +113,13 @@ namespace ShopApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result =await _mediator.Send(
+            var result = await _mediator.Send(
                     new GetAllProductQuery());
 
             return Ok(result);
         }
 
-
+        //response/req(rabbit)
         [HttpGet("inventory")]
         public async Task<IActionResult> Inventory()
         {
@@ -128,6 +132,17 @@ namespace ShopApi.Controllers
             return Ok(response.Message);
         }
 
+        //send(rabit)
+        [HttpPost("send")]
+        public async Task<IActionResult> Send()
+        {
+            var endpoint = await _send.GetSendEndpoint(
+                    new Uri("queue:reserve-inventory"));
+
+            await endpoint.Send(
+                new ReserveInventory(10, 2));
+            return Ok();
+        }
         #endregion
     }
 }

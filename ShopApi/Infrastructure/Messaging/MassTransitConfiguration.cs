@@ -15,6 +15,7 @@ namespace ShopApi.Infrastructure.Messaging
                 x.AddConsumer<EmailConsumer>();
                 x.AddConsumer<AuditConsumer>();
                 x.AddConsumer<InventoryConsumer>();
+                x.AddConsumer<ReserveInventoryConsumer>();
 
 
 
@@ -31,6 +32,13 @@ namespace ShopApi.Infrastructure.Messaging
                     {
                         r.Interval(3, TimeSpan.FromSeconds(5));
                     });
+
+                    //send command
+                    cfg.ReceiveEndpoint("reserve-inventory", e =>
+                    {
+                        e.ConfigureConsumer<ReserveInventoryConsumer>(context);
+                    });
+
 
                     cfg.ConfigureEndpoints(context);
                 });
