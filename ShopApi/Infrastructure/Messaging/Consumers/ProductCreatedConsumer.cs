@@ -15,6 +15,7 @@ namespace ShopApi.Infrastructure.Messaging.Consumers
             await Task.CompletedTask;
             //Console.WriteLine("Consumer Running");
             //throw new Exception("Test Retry");
+         //   throw new Exception("DLQ(dead letter qeue) Test");
 
         }
     }

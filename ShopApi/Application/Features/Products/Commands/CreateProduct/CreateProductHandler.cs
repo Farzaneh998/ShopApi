@@ -5,6 +5,7 @@ using ShopApi.Contracts.Events;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Data;
 using ShopApi.Infrastructure.Services.Caching;
+using System.Text.Json;
 
 namespace ShopApi.Application.Features.Products.Commands.CreateProduct
 {
@@ -46,12 +47,30 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
                 cancellationToken);
 
             //Masstransit pub
-            await _publishEndpoint.Publish(
-                new ProductCreated(
-                    product.Id,
-                    product.Name,
-                    product.Price));
+            //await _publishEndpoint.Publish(
+            //    new ProductCreated(
+            //        product.Id,
+            //        product.Name,
+            //        product.Price));
 
+
+            #region(outbox pattern)
+            var evt = new ProductCreated(
+    product.Id,
+    product.Name,
+    product.Price);
+
+            _context.OutboxMessages.Add(
+                new OutboxMessage
+                {
+                    Type = nameof(ProductCreated),
+                    Payload = JsonSerializer.Serialize(evt),
+                    CreatedAt = DateTime.UtcNow,
+                    Published = false
+                });
+
+            await _context.SaveChangesAsync();
+            #endregion
 
 
             #region(publish event : DOMAIN Driven event)

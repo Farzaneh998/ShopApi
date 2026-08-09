@@ -81,7 +81,7 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();//fluentvalidator
-
+builder.Services.AddHostedService<OutboxPublisher>();//when run exe=>exec
 //builder.Services.AddOpenApi();
 //builder.Services.AddSwaggerGen();//swagger
 #region(swagger)

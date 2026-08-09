@@ -13,7 +13,7 @@ public class ShopDbContext : DbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens=> Set<RefreshToken>();
-
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

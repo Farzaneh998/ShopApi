@@ -1,5 +1,7 @@
 ﻿using MassTransit;
 using ShopApi.Infrastructure.Messaging.Consumers;
+using ShopApi.Infrastructure.Data;
+using System;
 
 namespace ShopApi.Infrastructure.Messaging
 {
@@ -19,6 +21,15 @@ namespace ShopApi.Infrastructure.Messaging
 
 
 
+                //outbox patt
+                //x.AddEntityFrameworkOutbox<ShopDbContext>(o =>
+                //{
+                //    o.UseSqlServer();
+
+                //    o.UseBusOutbox();
+                //});
+
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host("localhost", "/", h =>
@@ -27,11 +38,13 @@ namespace ShopApi.Infrastructure.Messaging
                         h.Password("guest");
                     });
 
+
                     //Retry
                     cfg.UseMessageRetry(r =>
                     {
                         r.Interval(3, TimeSpan.FromSeconds(5));
                     });
+
 
                     //send command
                     cfg.ReceiveEndpoint("reserve-inventory", e =>
@@ -39,11 +52,10 @@ namespace ShopApi.Infrastructure.Messaging
                         e.ConfigureConsumer<ReserveInventoryConsumer>(context);
                     });
 
-
                     cfg.ConfigureEndpoints(context);
                 });
-            });
 
+            });
             return services;
         }
     }
