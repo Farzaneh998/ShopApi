@@ -17,8 +17,14 @@ namespace ShopApi.Infrastructure.Messaging
                 x.AddConsumer<EmailConsumer>();
                 x.AddConsumer<AuditConsumer>();
                 x.AddConsumer<InventoryConsumer>();
-                x.AddConsumer<ReserveInventoryConsumer>();
 
+
+                x.AddConsumer<OrderCreatedConsumer>();
+                x.AddConsumer<ReserveInventoryConsumer>();
+                x.AddConsumer<OrderInventoryReservedConsumer>();
+                x.AddConsumer<PaymentConsumer>();
+                x.AddConsumer<PaymentCompletedConsumer>();
+                x.AddConsumer<PaymentFailedConsumer>();
 
 
                 //outbox patt
@@ -46,11 +52,17 @@ namespace ShopApi.Infrastructure.Messaging
                     });
 
 
-                    //send command
+                    //send command(qeue)
                     cfg.ReceiveEndpoint("reserve-inventory", e =>
                     {
                         e.ConfigureConsumer<ReserveInventoryConsumer>(context);
                     });
+
+                    cfg.ReceiveEndpoint("request-payment", e =>
+                    {
+                        e.ConfigureConsumer<PaymentConsumer>(context);
+                    });
+
 
                     cfg.ConfigureEndpoints(context);
                 });

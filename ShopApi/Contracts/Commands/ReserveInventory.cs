@@ -1,6 +1,10 @@
 ﻿namespace ShopApi.Contracts.Commands
 {
+    //public record ReserveInventory(
+    //    int ProductId,
+    //    int Quantity);
+
     public record ReserveInventory(
-        int ProductId,
-        int Quantity);
+    int OrderId,
+    Guid CorrelationId);
 }

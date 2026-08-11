@@ -133,16 +133,16 @@ namespace ShopApi.Controllers
         }
 
         //send(rabit)
-        [HttpPost("send")]
-        public async Task<IActionResult> Send()
-        {
-            var endpoint = await _send.GetSendEndpoint(
-                    new Uri("queue:reserve-inventory"));
+        //[HttpPost("send")]
+        //public async Task<IActionResult> Send()
+        //{
+        //    var endpoint = await _send.GetSendEndpoint(
+        //            new Uri("queue:reserve-inventory"));
 
-            await endpoint.Send(
-                new ReserveInventory(10, 2));
-            return Ok();
-        }
+        //    await endpoint.Send(
+        //        new ReserveInventory(10, 2));
+        //    return Ok();
+        //}
         #endregion
     }
 }
