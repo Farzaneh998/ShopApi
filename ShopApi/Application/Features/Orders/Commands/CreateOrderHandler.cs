@@ -43,7 +43,8 @@ namespace ShopApi.Application.Features.Orders.Commands
             await _publish.Publish(
                 new OrderCreated(
                     correlationId,
-                    order.Id),
+                    order.Id,
+                   request.TotalPrice),
                 cancellationToken);
 
             return order.Id;

@@ -75,13 +75,15 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ShopDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"));
+        builder.Configuration.GetConnectionString("DefaultConnection"))
+    .LogTo(Console.WriteLine);//query log to console
+      //  .EnableSensitiveDataLogging();  //queyr log to serilog
 });
 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();//fluentvalidator
-builder.Services.AddHostedService<OutboxPublisher>();//when run exe=>exec
+//builder.Services.AddHostedService<OutboxPublisher>();//when run exe=>exec
 //builder.Services.AddOpenApi();
 //builder.Services.AddSwaggerGen();//swagger
 #region(swagger)

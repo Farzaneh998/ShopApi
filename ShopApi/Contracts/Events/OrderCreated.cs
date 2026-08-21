@@ -2,5 +2,6 @@
 {
     public record OrderCreated(
         Guid CorrelationId,
-        int OrderId);
+        int OrderId,
+        decimal Amount);
 }

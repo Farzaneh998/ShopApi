@@ -2,6 +2,8 @@
 {
     public record InventoryReserved(
      Guid CorrelationId,
-     int OrderId);
-
+     int OrderId)
+    {
+        public decimal Amount { get; internal set; }
+    }
 }

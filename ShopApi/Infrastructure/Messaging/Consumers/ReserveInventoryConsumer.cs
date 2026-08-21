@@ -27,15 +27,15 @@ namespace ShopApi.Infrastructure.Messaging.Consumers
 
             //saga state
             var massage = context.Message;
-            var saga = new OrderSagaState
-            {
-                CorrelationId = massage.CorrelationId,
-                OrderId = massage.OrderId,
-                CurrentState = "InventoryResrevd",
-                CreatedAt = DateTime.UtcNow
-            };
-            _Context.OrderSagaStates.Add(saga);
-            await _Context.SaveChangesAsync();
+            //var saga = new OrderSagaState
+            //{
+            //    CorrelationId = massage.CorrelationId,
+            //    OrderId = massage.OrderId,
+            //    CurrentState = "InventoryResrevd",
+            //    CreatedAt = DateTime.UtcNow
+            //};
+            //_Context.OrderSagaStates.Add(saga);
+            //await _Context.SaveChangesAsync();
 
             await context.Publish(
                 new InventoryReserved(

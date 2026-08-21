@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructure\Messaging\Consumers\OrderCreatedConsumer.cs" />
+    <Compile Remove="Infrastructure\Messaging\Consumers\OrderInventoryReservedConsumer.cs" />
+    <Compile Remove="Infrastructure\Messaging\Consumers\PaymentCompletedConsumer.cs" />
+    <Compile Remove="Infrastructure\Messaging\Consumers\PaymentFailedConsumer.cs" />
     <Compile Remove="Infrastructure\Messaging\IRabbitMQPublisher.cs" />
     <Compile Remove="Infrastructure\Messaging\RabbitMQConsumer.cs" />
     <Compile Remove="Infrastructure\Messaging\RabbitMQPublisher.cs" />
@@ -24,6 +28,8 @@
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.24" />
 
     <PackageReference Include="MassTransit" Version="9.2.0" />
+
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.2.0" />
 
 
 

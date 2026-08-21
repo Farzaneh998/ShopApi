@@ -4,4 +4,5 @@
         int OrderId,
         Guid CorrelationId,
         decimal Amount);
+
 }

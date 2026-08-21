@@ -1,8 +1,10 @@
-﻿namespace ShopApi.Infrastructure.Messaging.Saga
+﻿using MassTransit;
+
+namespace ShopApi.Infrastructure.Messaging.Saga
 {
-    public class OrderSagaState
+    public class OrderSagaState: SagaStateMachineInstance
     {
-        public int Id { get; set; }
+
 
         public Guid CorrelationId { get; set; }
 
@@ -13,5 +15,7 @@
         public DateTime CreatedAt { get; set; }
 
         public DateTime? CompletedAt { get; set; }
+        public decimal Amount { get; set; }//for request payment step
+
     }
 }

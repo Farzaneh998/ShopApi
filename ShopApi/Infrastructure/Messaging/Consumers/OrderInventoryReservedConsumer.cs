@@ -27,15 +27,15 @@ namespace ShopApi.Infrastructure.Messaging.Consumers
 
             //saga state
             var massage = context.Message;
-            var saga = new OrderSagaState
-            {
-                CorrelationId = massage.CorrelationId,
-                OrderId = massage.OrderId,
-                CurrentState = "payment pending",
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.OrderSagaStates.Add(saga);
-            await _context.SaveChangesAsync();
+            //var saga = new OrderSagaState
+            //{
+            //    CorrelationId = massage.CorrelationId,
+            //    OrderId = massage.OrderId,
+            //    CurrentState = "payment pending",
+            //    CreatedAt = DateTime.UtcNow
+            //};
+            //_context.OrderSagaStates.Add(saga);
+            //await _context.SaveChangesAsync();
 
             var order = await _context.Orders
                 .FirstOrDefaultAsync(

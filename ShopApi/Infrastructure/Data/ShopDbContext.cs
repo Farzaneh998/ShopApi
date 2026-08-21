@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using ShopApi.Domain.Entities;
 using ShopApi.Infrastructure.Messaging.Saga;
 
@@ -20,6 +21,28 @@ public class ShopDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+
+        #region(map sagaEntity)
+
+        modelBuilder.Entity<OrderSagaState>(entity =>
+        {
+            entity.HasKey(x => x.CorrelationId);
+
+            entity.Property(x => x.CurrentState)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.OrderId)
+                .IsRequired();
+
+            entity.Property(x => x.CreatedAt)
+                .IsRequired();
+
+            entity.Property(x => x.Amount)
+                .IsRequired();
+        });
+        #endregion
+
 
 
         //Fluent API to database level

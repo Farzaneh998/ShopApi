@@ -1,7 +1,10 @@
 ﻿using MassTransit;
-using ShopApi.Infrastructure.Messaging.Consumers;
 using ShopApi.Infrastructure.Data;
+using ShopApi.Infrastructure.Messaging.Consumers;
+using ShopApi.Infrastructure.Messaging.Saga;
 using System;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace ShopApi.Infrastructure.Messaging
 {
@@ -19,12 +22,12 @@ namespace ShopApi.Infrastructure.Messaging
                 x.AddConsumer<InventoryConsumer>();
 
 
-                x.AddConsumer<OrderCreatedConsumer>();
+               // x.AddConsumer<OrderCreatedConsumer>();
                 x.AddConsumer<ReserveInventoryConsumer>();
-                x.AddConsumer<OrderInventoryReservedConsumer>();
+               // x.AddConsumer<OrderInventoryReservedConsumer>();
                 x.AddConsumer<PaymentConsumer>();
-                x.AddConsumer<PaymentCompletedConsumer>();
-                x.AddConsumer<PaymentFailedConsumer>();
+              //  x.AddConsumer<PaymentCompletedConsumer>();
+                //x.AddConsumer<PaymentFailedConsumer>();
 
 
                 //outbox patt
@@ -34,6 +37,14 @@ namespace ShopApi.Infrastructure.Messaging
 
                 //    o.UseBusOutbox();
                 //});
+
+                //saga
+                x.AddSagaStateMachine<OrderStateMachine, OrderSagaState>()
+                    .EntityFrameworkRepository(r =>
+                    {
+                        r.ExistingDbContext<ShopDbContext>();
+                        r.UseSqlServer();
+                    });
 
 
                 x.UsingRabbitMq((context, cfg) =>
