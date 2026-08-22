@@ -15,7 +15,7 @@ public class ShopDbContext : DbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens=> Set<RefreshToken>();
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    //public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<OrderSagaState> OrderSagaStates => Set<OrderSagaState>();
     public DbSet<Order> Orders => Set<Order>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -60,16 +60,17 @@ namespace ShopApi.Application.Features.Products.Commands.CreateProduct
     product.Name,
     product.Price);
 
-            _context.OutboxMessages.Add(
-                new OutboxMessage
-                {
-                    Type = nameof(ProductCreated),
-                    Payload = JsonSerializer.Serialize(evt),
-                    CreatedAt = DateTime.UtcNow,
-                    Published = false
-                });
 
-            await _context.SaveChangesAsync();
+            //_context.OutboxMessages.Add(
+            //    new OutboxMessage
+            //    {
+            //        Type = nameof(ProductCreated),
+            //        Payload = JsonSerializer.Serialize(evt),
+            //        CreatedAt = DateTime.UtcNow,
+            //        Published = false
+            //    });
+
+            //await _context.SaveChangesAsync();
             #endregion
 
 

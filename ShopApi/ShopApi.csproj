@@ -12,6 +12,7 @@
     <Compile Remove="Infrastructure\Messaging\Consumers\PaymentCompletedConsumer.cs" />
     <Compile Remove="Infrastructure\Messaging\Consumers\PaymentFailedConsumer.cs" />
     <Compile Remove="Infrastructure\Messaging\IRabbitMQPublisher.cs" />
+    <Compile Remove="Infrastructure\Messaging\OutboxPublisher.cs" />
     <Compile Remove="Infrastructure\Messaging\RabbitMQConsumer.cs" />
     <Compile Remove="Infrastructure\Messaging\RabbitMQPublisher.cs" />
     <Compile Remove="Infrastructure\Messaging\RabbitMQSettings.cs" />
